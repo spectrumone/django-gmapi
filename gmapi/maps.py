@@ -12,7 +12,9 @@ STATIC_URL = getattr(settings, 'GMAPI_STATIC_URL',
                      'http://maps.google.com/maps/api/staticmap')
 
 GEOCODE_URL = getattr(settings, 'GMAPI_GEOCODE_URL',
-                      'http://maps.google.com/maps/api/geocode')
+                      'https://maps.google.com/maps/api/geocode')
+
+GMAP_API_KEY = getattr(settings, 'GMAP_API_KEY', '')
 
 CHART_URL = getattr(settings, 'GMAPI_CHART_URL',
                     'http://chart.apis.google.com/chart')
@@ -474,7 +476,10 @@ class Geocoder(object):
         else:
             request['sensor'] = 'false'
         cache_key = urlencode(request)
-        url = '%s/json?%s' % (GEOCODE_URL, cache_key)
+        if GMAP_API_KEY:
+            url = '%s/json?key=%s&%s' % (GEOCODE_URL, GMAP_API_KEY, cache_key)
+        else:
+            url = '%s/json?%s' % (GEOCODE_URL, cache_key)
         # Try up to 30 times if over query limit.
         for _ in xrange(30):
             # Check if result is already cached.
